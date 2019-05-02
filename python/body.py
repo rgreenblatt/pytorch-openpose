@@ -115,6 +115,8 @@ class Body(object):
                     for j in range(nB):
                         vec = np.subtract(candB[j][:2], candA[i][:2])
                         norm = math.sqrt(vec[0] * vec[0] + vec[1] * vec[1])
+                        if norm == 0:
+                            continue
                         vec = np.divide(vec, norm)
 
                         startend = list(zip(np.linspace(candA[i][0], candB[j][0], num=mid_num), \
