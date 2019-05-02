@@ -1,12 +1,12 @@
 import cv2
 import numpy as np
-import util
+from .util import *
 import math
 import time
 from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
 import matplotlib
-from model import bodypose_model
+from .model import bodypose_model
 import torch
 from torchvision import transforms
 
@@ -15,7 +15,7 @@ class Body(object):
         self.model = bodypose_model()
         if torch.cuda.is_available():
             self.model = self.model.cuda()
-        model_dict = util.transfer(self.model, torch.load(model_path))
+        model_dict = transfer(self.model, torch.load(model_path))
         self.model.load_state_dict(model_dict)
         self.model.eval()
 
@@ -34,7 +34,7 @@ class Body(object):
         for m in range(len(multiplier)):
             scale = multiplier[m]
             imageToTest = cv2.resize(oriImg, (0, 0), fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
-            imageToTest_padded, pad = util.padRightDownCorner(imageToTest, stride, padValue)
+            imageToTest_padded, pad = padRightDownCorner(imageToTest, stride, padValue)
             im = np.transpose(np.float32(imageToTest_padded[:, :, :, np.newaxis]), (3, 2, 0, 1)) / 256 - 0.5
             im = np.ascontiguousarray(im)
 
@@ -213,6 +213,6 @@ if __name__ == "__main__":
     test_image = '../images/ski.jpg'
     oriImg = cv2.imread(test_image)  # B,G,R order
     candidate, subset = body_estimation(oriImg)
-    canvas = util.draw_bodypose(oriImg, candidate, subset)
+    canvas = draw_bodypose(oriImg, candidate, subset)
     plt.imshow(canvas[:, :, [2, 1, 0]])
     plt.show()
