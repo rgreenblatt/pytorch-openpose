@@ -78,8 +78,14 @@ class PoseNormalizer:
         return np.median(ankle_array, overwrite_input=False)
     
     def _get_min_ankle_position(self, ankle_array, med, mx):
-        cluster = np.array([p for p in ankle_array if (p < med) and (np.abs(np.abs(p - med) - np.abs(mx - med)) < self.epsilon)])
-        return np.max(cluster)
+        try:
+            cluster = np.array([p for p in ankle_array if (p < med) and (np.abs(np.abs(p - med) - np.abs(mx - med)) < self.epsilon)])
+            mn = np.max(cluster)
+        except Exception as e:
+            print(e)
+            print("Warning: Minimum as defined failed, reverting to np.min")
+            mn = np.min(ankle_array)
+        return mn 
 
     def _get_close_far_position(self, ankle_array, mx, mn):
         cluster_far = np.array([p for p in ankle_array if (np.abs(p - mn) < self.epsilon)])
